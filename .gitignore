@@ -1,0 +1,36 @@
+# Composer / PHP tooling
+/vendor/
+/.phpunit.cache/
+/coverage/
+/composer
+
+# Node / frontend tooling
+/node_modules/
+/frontend/node_modules/
+/frontend/dist/
+/frontend/coverage/
+/frontend/.vite/
+
+# Local environment
+.env
+.env.*
+!.env.example
+
+# Logs and temporary runtime output
+*.log
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+
+# OS/editor noise
+.DS_Store
+Thumbs.db
+
+# Roam local index/cache
+/.roam/
+
+# Local agent/editor workspace state
+/.cursor/
+/memory-bank/

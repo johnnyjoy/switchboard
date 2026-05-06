@@ -1,0 +1,13 @@
+{
+  "name": "switchboard",
+  "version": "0.1.0",
+  "description": "Self-hosted HTTP endpoint management and routing",
+  "type": "module",
+  "scripts": {
+    "dev": "pnpm --prefix frontend dev"
+  },
+  "dependencies": {},
+  "engines": {
+    "node": ">=20"
+  }
+}

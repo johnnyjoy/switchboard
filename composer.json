@@ -1,0 +1,24 @@
+{
+  "name": "switchboard/switchboard",
+  "description": "Switchboard endpoint routing and runtime",
+  "license": "MIT",
+  "require": {
+    "php": ">=8.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^10"
+  },
+  "autoload": {
+    "psr-4": {
+      "Switchboard\\Runtime\\": "sb/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Switchboard\\Runtime\\Tests\\": "tests/php/"
+    }
+  },
+  "config": {
+    "allow-plugins": {}
+  }
+}

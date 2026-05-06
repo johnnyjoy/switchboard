@@ -1,0 +1,91 @@
+# Nginx example: immutable Switchboard runtime, control-plane API, and dynamic apps.
+# Public URLs have no .php (e.g. /sb/minimal/v1/health or /foo/api/health).
+# Copy and adjust server_name, base paths, and fastcgi_pass for your image.
+
+server {
+    listen 80;
+    server_name switchboard.local;
+
+    # Optional: serve the Switchboard operator UI as a static frontend.
+    root /path/to/switchboard/frontend/dist;
+
+    # Fingerprinted frontend assets should be served directly and fail closed.
+    location ^~ /assets/ {
+        try_files $uri =404;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+    }
+
+    # Canonical runtime lane. This keeps /sb/<app>/<version>/... portable.
+    location ^~ /sb/ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /path/to/switchboard/sb/switchboard.php;
+        fastcgi_param SCRIPT_NAME /switchboard.php;
+        fastcgi_param REQUEST_URI $request_uri;
+        fastcgi_pass unix:/run/php/php8.2-fpm.sock;   # or 127.0.0.1:9000
+        fastcgi_param SWITCHBOARD_CONFIG /path/to/switchboard/config/endpoints.json;
+        fastcgi_param SWITCHBOARD_HANDLERS_PATH /path/to/switchboard/examples/minimal-handler;
+    }
+
+    # Management API lane. Protect this with auth, a private network, VPN, or IP allowlist.
+    location ^~ /api/ {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /path/to/switchboard/sb/api.php;
+        fastcgi_param SCRIPT_NAME /api.php;
+        fastcgi_param REQUEST_URI $request_uri;
+        fastcgi_pass unix:/run/php/php8.2-fpm.sock;   # or 127.0.0.1:9000
+        fastcgi_param SWITCHBOARD_CONFIG /path/to/switchboard/config/endpoints.json;
+    }
+
+    # Immutable dynamic app API lane.
+    #
+    # Any app slug maps by convention:
+    #   URL mount: /<app>
+    #   static root: /srv/switchboard/apps/<app>/dist
+    #   API lane: /<app>/api/*
+    #
+    # Real static files under dist/api win. Switchboard is the fallback only
+    # for the reserved API lane when no flat file exists there.
+    location ~ ^/(?<app>[a-z0-9-]+)/api(?<api_path>/.*)?$ {
+        root /srv/switchboard/apps;
+        set $mount_app $app;
+        set $mount_path /$app;
+        set $mount_api_prefix /api;
+        try_files /$app/dist/api$api_path /$app/dist/api$api_path/ @switchboard_mount_api;
+    }
+
+    location @switchboard_mount_api {
+        include fastcgi_params;
+        fastcgi_param SCRIPT_FILENAME /path/to/switchboard/sb/switchboard.php;
+        fastcgi_param SCRIPT_NAME /switchboard.php;
+        fastcgi_param REQUEST_URI $request_uri;
+        fastcgi_param SWITCHBOARD_MOUNT_APP $mount_app;
+        fastcgi_param SWITCHBOARD_MOUNT_PATH $mount_path;
+        fastcgi_param SWITCHBOARD_MOUNT_API_PREFIX $mount_api_prefix;
+        fastcgi_pass unix:/run/php/php8.2-fpm.sock;   # or 127.0.0.1:9000
+        fastcgi_param SWITCHBOARD_CONFIG /path/to/switchboard/config/endpoints.json;
+        fastcgi_param SWITCHBOARD_HANDLERS_PATH /path/to/switchboard/examples/minimal-handler;
+    }
+
+    # Immutable dynamic app frontend/static lane.
+    # Adding app "foo" means adding files under /srv/switchboard/apps/foo/dist
+    # and registry entries for slug "foo"; Nginx does not change or reload.
+    location ~ ^/(?<app>[a-z0-9-]+)(?<rest>/.*)?$ {
+        root /srv/switchboard/apps;
+        try_files /$app/dist$rest /$app/dist$rest/ /$app/dist/index.html =404;
+    }
+
+    # Operator UI fallback, if this server also hosts the Switchboard UI.
+    location / {
+        try_files $uri $uri/ /index.html;
+    }
+
+    location ~ /\. {
+        deny all;
+    }
+
+    # Reject direct access to PHP files. Only explicit lanes above execute PHP.
+    location ~ \.php$ {
+        return 404;
+    }
+}

@@ -1,0 +1,123 @@
+{
+    "apps": [
+        {
+            "id": "a1",
+            "slug": "news",
+            "name": "News",
+            "description": "News app endpoints",
+            "app_path": "https://github.com/example/news-handlers",
+            "enabled": true,
+            "created_at": "2026-03-12T00:00:00Z",
+            "updated_at": "2026-03-12T00:00:00Z"
+        },
+        {
+            "id": "474f63f2-a655-4fc1-8f8f-358e357e2093",
+            "slug": "app",
+            "name": "App",
+            "description": "App",
+            "app_path": null,
+            "enabled": true,
+            "created_at": "2026-03-12T18:35:06Z",
+            "updated_at": "2026-03-12T18:35:06Z"
+        },
+        {
+            "id": "minimal-php-app",
+            "slug": "minimal",
+            "name": "Minimal PHP Example",
+            "description": "Single-endpoint example implementing the PHP app contract (examples/minimal-handler)",
+            "app_path": null,
+            "enabled": true,
+            "created_at": "2026-03-12T00:00:00Z",
+            "updated_at": "2026-03-12T00:00:00Z"
+        }
+    ],
+    "endpoints": [
+        {
+            "id": "e1",
+            "app_id": "a1",
+            "name": "Articles",
+            "host": null,
+            "path": "/news/articles",
+            "methods": [
+                "GET",
+                "HEAD"
+            ],
+            "handler_class": "News\\ListArticles",
+            "handler_method": "handle",
+            "enabled": true,
+            "created_at": "2026-03-12T00:00:00Z",
+            "updated_at": "2026-05-02T00:00:00Z"
+        },
+        {
+            "id": "e2",
+            "app_id": "a1",
+            "name": "Create article",
+            "host": null,
+            "path": "/news/articles",
+            "methods": [
+                "POST"
+            ],
+            "handler_class": "News\\CreateArticle",
+            "handler_method": "handle",
+            "enabled": false,
+            "created_at": "2026-03-12T00:00:00Z",
+            "updated_at": "2026-05-02T00:00:00Z"
+        },
+        {
+            "id": "e3",
+            "app_id": "a1",
+            "name": "Article detail",
+            "host": null,
+            "path": "/news/articles/{id:integer}",
+            "methods": [
+                "GET"
+            ],
+            "handler_class": "News\\ShowArticle",
+            "handler_method": "handle",
+            "enabled": true,
+            "created_at": "2026-03-12T00:00:00Z",
+            "updated_at": "2026-05-02T00:00:00Z"
+        },
+        {
+            "id": "e-minimal-health",
+            "app_id": "minimal-php-app",
+            "name": "Health",
+            "host": null,
+            "path": "/health",
+            "methods": [
+                "GET",
+                "HEAD"
+            ],
+            "handler_class": "Minimal\\Health",
+            "handler_method": "handle",
+            "enabled": true,
+            "created_at": "2026-03-12T00:00:00Z",
+            "updated_at": "2026-05-02T00:00:00Z"
+        }
+    ],
+    "endpoint_predicates": [
+        {
+            "id": "pred-e1-limit",
+            "endpoint_id": "e1",
+            "source": "query",
+            "name": "limit",
+            "op": "type",
+            "value": null,
+            "value_type": "integer",
+            "created_at": "2026-05-02T00:00:00Z",
+            "updated_at": "2026-05-02T00:00:00Z"
+        },
+        {
+            "id": "pred-e2-title",
+            "endpoint_id": "e2",
+            "source": "json",
+            "name": "title",
+            "op": "present",
+            "value": null,
+            "value_type": null,
+            "created_at": "2026-05-02T00:00:00Z",
+            "updated_at": "2026-05-02T00:00:00Z"
+        }
+    ],
+    "endpoint_validations": []
+}

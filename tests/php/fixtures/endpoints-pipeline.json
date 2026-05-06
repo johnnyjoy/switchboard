@@ -1,0 +1,34 @@
+{
+    "apps": [
+        {
+            "id": "minimal-php-app",
+            "slug": "minimal",
+            "name": "Minimal",
+            "enabled": true
+        }
+    ],
+    "endpoints": [
+        {
+            "id": "e-minimal-health",
+            "app_id": "minimal-php-app",
+            "host": null,
+            "path": "/health",
+            "methods": ["GET", "HEAD"],
+            "handler_class": "Minimal\\Health",
+            "handler_method": "handle",
+            "enabled": true
+        },
+        {
+            "id": "e-minimal-list",
+            "app_id": "minimal-php-app",
+            "host": null,
+            "path": "/items",
+            "methods": ["GET"],
+            "handler_class": "Minimal\\List",
+            "handler_method": "handle",
+            "enabled": true
+        }
+    ],
+    "endpoint_predicates": [],
+    "endpoint_validations": []
+}

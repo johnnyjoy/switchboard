@@ -1,0 +1,24 @@
+# Apache example: Switchboard PHP runtime as single entry point.
+# Public URLs have no .php (e.g. /sb/minimal/v1/health).
+# Requires mod_rewrite. Copy into a VirtualHost or include from httpd.conf.
+
+<VirtualHost *:80>
+    ServerName switchboard.local
+    DocumentRoot /path/to/switchboard/sb
+
+    <Directory /path/to/switchboard/sb>
+        Require all granted
+        DirectoryIndex switchboard.php
+        FallbackResource /switchboard.php
+    </Directory>
+
+    # Optional: set env for PHP (alternative: SetEnv in Directory or .htaccess)
+    SetEnv SWITCHBOARD_CONFIG /path/to/switchboard/config/endpoints.json
+    SetEnv SWITCHBOARD_HANDLERS_PATH /path/to/switchboard/examples/minimal-handler
+</VirtualHost>
+
+# If FallbackResource is not available (Apache 2.2 or older config), use:
+# RewriteEngine On
+# RewriteCond %{REQUEST_FILENAME} !-f
+# RewriteCond %{REQUEST_FILENAME} !-d
+# RewriteRule ^ /switchboard.php [QSA,L]
